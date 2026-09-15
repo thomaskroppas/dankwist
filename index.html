@@ -98,7 +98,7 @@ h1 .pct{color:var(--gold)}
 /* --- плотная сетка плиток --- */
 .tiles{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(154px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(308px,1fr));
   gap:3px;
 }
 .tile{
@@ -121,7 +121,7 @@ h1 .pct{color:var(--gold)}
 }
 .fallback .name{
   font-family:'Unbounded',sans-serif;
-  font-weight:700;font-size:11px;line-height:1.25;
+  font-weight:700;font-size:14px;line-height:1.25;
   color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6);
 }
 .hover{
@@ -134,10 +134,10 @@ h1 .pct{color:var(--gold)}
 .tile:hover .hover,.tile:focus-visible .hover{opacity:1}
 @media (prefers-reduced-motion: reduce){.hover{transition:none}}
 .hover .t{
-  font-family:'Unbounded',sans-serif;font-weight:700;font-size:11px;color:#fff;line-height:1.25;
+  font-family:'Unbounded',sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1.25;
 }
-.hover .w{color:var(--gold);font-size:11px;font-weight:600}
-.hover .h{color:var(--ink-dim);font-size:10px}
+.hover .w{color:var(--gold);font-size:13px;font-weight:600}
+.hover .h{color:var(--ink-dim);font-size:12px}
 
 .empty{
   color:var(--ink-dim);font-size:14px;padding:10px 0 2px;
@@ -156,6 +156,7 @@ footer{
   <p class="tagline">Все игры, пройденные на 100% достижений, — по сложности платины. Клик по обложке открывает видео с прохождением сразу на нужном таймкоде.</p>
   <div class="stats">
     <div class="stat"><b id="statGames">0</b><span>игр пройдено</span></div>
+    <div class="stat"><b id="statHours">0</b><span>часов до платины</span></div>
     <div class="stat"><b id="statVideos">0</b><span>выпусков</span></div>
   </div>
 </header>
@@ -178,45 +179,45 @@ const TIERS=[
  {key:"Невозможно",color:"var(--d6)"}
 ];
 
-/* v — id YouTube-видео, t — таймкод в секундах, id — Steam appid для обложки */
+/* v — id YouTube-видео, t — таймкод в секундах, h — часов до 100%, id — Steam appid для обложки */
 const GAMES=[
- {n:"Alba: A Wildlife Adventure",d:"Очень легко",v:"OV1IeFbSUUs",t:3510,id:1337010},
- {n:"Spilled!",d:"Очень легко",v:"UxFUTD6dO-Y",t:0,id:2240080},
- {n:"Leaf it Alone",d:"Очень легко",v:"UxFUTD6dO-Y",t:1196,id:3981100},
- {n:"LEGO Voyagers",d:"Очень легко",v:"l8rc2HWwGUA",t:1553,id:1538550},
+ {n:"Alba: A Wildlife Adventure",d:"Очень легко",h:5,v:"OV1IeFbSUUs",t:3510,id:1337010},
+ {n:"Spilled!",d:"Очень легко",h:2,v:"UxFUTD6dO-Y",t:0,id:2240080},
+ {n:"Leaf it Alone",d:"Очень легко",h:4,v:"UxFUTD6dO-Y",t:1196,id:3981100},
+ {n:"LEGO Voyagers",d:"Очень легко",h:6,v:"l8rc2HWwGUA",t:1553,id:1538550},
 
- {n:"Loddlenaut",d:"Легко",v:"UxFUTD6dO-Y",t:2975,id:1644940},
- {n:"Hello Neighbor",d:"Легко",v:"cToipL19mt0",t:1220,id:521890},
- {n:"Как достать соседа (Neighbours back From Hell)",d:"Легко",v:"TJWN_12r4SM",t:0,id:1283190},
- {n:"Sonic Adventure DX",d:"Легко",v:"lWqbIcR9CPE",t:1395,id:71250},
- {n:"Lucius Demake",d:"Легко",v:"xADjuQgr6to",t:2178,id:364230},
- {n:"LEGO Batman: The Videogame",d:"Легко",v:"qPU10wXx28w",t:519,id:21000},
- {n:"LEGO Horizon Adventures",d:"Легко",v:"qPU10wXx28w",t:0,id:2428810},
- {n:"LEGO Star Wars: The Force Awakens",d:"Легко",v:"qPU10wXx28w",t:1214,id:438640},
+ {n:"Loddlenaut",d:"Легко",h:7,v:"UxFUTD6dO-Y",t:2975,id:1644940},
+ {n:"Hello Neighbor",d:"Легко",h:7,v:"cToipL19mt0",t:1220,id:521890},
+ {n:"Как достать соседа (Neighbours back From Hell)",d:"Легко",h:6,v:"TJWN_12r4SM",t:0,id:1283190},
+ {n:"Sonic Adventure DX",d:"Легко",h:14,v:"lWqbIcR9CPE",t:1395,id:71250},
+ {n:"Lucius Demake",d:"Легко",h:5,v:"xADjuQgr6to",t:2178,id:364230},
+ {n:"LEGO Batman: The Videogame",d:"Легко",h:15,v:"qPU10wXx28w",t:519,id:21000},
+ {n:"LEGO Horizon Adventures",d:"Легко",h:12,v:"qPU10wXx28w",t:0,id:2428810},
+ {n:"LEGO Star Wars: The Force Awakens",d:"Легко",h:18,v:"qPU10wXx28w",t:1214,id:438640},
 
- {n:"Police Stories",d:"Нормально",v:"cToipL19mt0",t:2561,id:539470},
- {n:"007 First Light",d:"Нормально",v:"TJWN_12r4SM",t:1086,id:3768760},
- {n:"We Were Here Forever",d:"Нормально",v:"TJWN_12r4SM",t:2664,id:1341290},
- {n:"TMNT: Splintered Fate",d:"Нормально",v:"lWqbIcR9CPE",t:0,id:2996040},
- {n:"MOUSE: P.I. For Hire",d:"Нормально",v:"lWqbIcR9CPE",t:3769,id:2416450},
- {n:"Greyhill Incident",d:"Нормально",v:"hbc1HJB3KmA",t:0,id:1905020},
- {n:"Quantum Break",d:"Нормально",v:"hbc1HJB3KmA",t:531,id:474960},
- {n:"Front Mission Evolved",d:"Нормально",v:"hbc1HJB3KmA",t:1679,id:43000},
- {n:"Lucius",d:"Нормально",v:"xADjuQgr6to",t:159,id:218640},
- {n:"Lucius II",d:"Нормально",v:"xADjuQgr6to",t:1034,id:296830},
- {n:"Lucius III",d:"Нормально",v:"xADjuQgr6to",t:2623,id:513290},
- {n:"Little Nightmares III",d:"Нормально",v:"l8rc2HWwGUA",t:496,id:1392860},
- {n:"Metro 2033 Redux",d:"Нормально",v:"ntuJ0vS1eGg",t:320,id:286690},
- {n:"Metro: Last Light Redux",d:"Нормально",v:"ntuJ0vS1eGg",t:1491,id:287390},
+ {n:"Police Stories",d:"Нормально",h:8,v:"cToipL19mt0",t:2561,id:539470},
+ {n:"007 First Light",d:"Нормально",h:16,v:"TJWN_12r4SM",t:1086,id:3768760},
+ {n:"We Were Here Forever",d:"Нормально",h:12,v:"TJWN_12r4SM",t:2664,id:1341290},
+ {n:"TMNT: Splintered Fate",d:"Нормально",h:14,v:"lWqbIcR9CPE",t:0,id:2996040},
+ {n:"MOUSE: P.I. For Hire",d:"Нормально",h:11,v:"lWqbIcR9CPE",t:3769,id:2416450},
+ {n:"Greyhill Incident",d:"Нормально",h:4,v:"hbc1HJB3KmA",t:0,id:1905020},
+ {n:"Quantum Break",d:"Нормально",h:17,v:"hbc1HJB3KmA",t:531,id:474960},
+ {n:"Front Mission Evolved",d:"Нормально",h:10,v:"hbc1HJB3KmA",t:1679,id:43000},
+ {n:"Lucius",d:"Нормально",h:6,v:"xADjuQgr6to",t:159,id:218640},
+ {n:"Lucius II",d:"Нормально",h:7,v:"xADjuQgr6to",t:1034,id:296830},
+ {n:"Lucius III",d:"Нормально",h:8,v:"xADjuQgr6to",t:2623,id:513290},
+ {n:"Little Nightmares III",d:"Нормально",h:9,v:"l8rc2HWwGUA",t:496,id:1392860},
+ {n:"Metro 2033 Redux",d:"Нормально",h:14,v:"ntuJ0vS1eGg",t:320,id:286690},
+ {n:"Metro: Last Light Redux",d:"Нормально",h:13,v:"ntuJ0vS1eGg",t:1491,id:287390},
 
- {n:"I Am Fish",d:"Сложно",v:"cToipL19mt0",t:0,id:1472560},
- {n:"Tunic",d:"Сложно",v:"l8rc2HWwGUA",t:0,id:553420},
- {n:"Metro Exodus",d:"Сложно",v:"ntuJ0vS1eGg",t:3062,id:412020},
- {n:"Metro Awakening VR",d:"Сложно",v:"ntuJ0vS1eGg",t:4941,id:2669410},
+ {n:"I Am Fish",d:"Сложно",h:10,v:"cToipL19mt0",t:0,id:1472560},
+ {n:"Tunic",d:"Сложно",h:20,v:"l8rc2HWwGUA",t:0,id:553420},
+ {n:"Metro Exodus",d:"Сложно",h:27,v:"ntuJ0vS1eGg",t:3062,id:412020},
+ {n:"Metro Awakening VR",d:"Сложно",h:12,v:"ntuJ0vS1eGg",t:4941,id:2669410},
 
- {n:"Sekiro: Shadows Die Twice",d:"Очень сложно",v:"OV1IeFbSUUs",t:867,id:814380},
+ {n:"Sekiro: Shadows Die Twice",d:"Очень сложно",h:60,v:"OV1IeFbSUUs",t:867,id:814380},
 
- {n:"Skull Island: Rise of Kong",d:"Невозможно",v:"OV1IeFbSUUs",t:0,id:2097890}
+ {n:"Skull Island: Rise of Kong",d:"Невозможно",h:5,v:"OV1IeFbSUUs",t:0,id:2097890}
 ];
 
 function hue(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h%360}
@@ -230,12 +231,6 @@ function coverUrl(g){
 function ytLink(g){
   return `https://www.youtube.com/watch?v=${g.v}`+(g.t?`&t=${g.t}s`:"");
 }
-function fmtTime(t){
-  const h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;
-  const mm=h?String(m).padStart(2,"0"):m, ss=String(s).padStart(2,"0");
-  return h?`${h}:${mm}:${ss}`:`${m}:${ss}`;
-}
-
 const board=document.getElementById("board");
 let query="";
 
@@ -245,7 +240,7 @@ function tileHtml(g){
   return `<a class="tile" href="${ytLink(g)}" target="_blank" rel="noopener" aria-label="${g.n} — смотреть прохождение">
     <div class="fallback" style="background:${fallbackBg(g)}"><div class="name">${g.n}</div></div>
     ${img}
-    <div class="hover"><span class="t">${g.n}</span><span class="w">▶ Смотреть прохождение</span><span class="h">с ${fmtTime(g.t)}</span></div>
+    <div class="hover"><span class="t">${g.n}</span><span class="w">▶ Смотреть прохождение</span><span class="h">${g.h} ч до 100%</span></div>
   </a>`;
 }
 
@@ -272,6 +267,7 @@ function plural(n){
 }
 
 document.getElementById("statGames").textContent=GAMES.length;
+document.getElementById("statHours").textContent=GAMES.reduce((s,g)=>s+g.h,0);
 document.getElementById("statVideos").textContent=new Set(GAMES.map(g=>g.v)).size;
 document.getElementById("q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();render()});
 render();
