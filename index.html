@@ -70,14 +70,6 @@ h1 .pct{color:var(--gold)}
 }
 .search:focus{border-color:var(--gold-deep)}
 .search::placeholder{color:var(--ink-dim)}
-.sort{
-  background:var(--bg-raise);
-  border:1px solid var(--edge);
-  border-radius:10px;
-  padding:10px 13px;
-  color:var(--ink);
-  font:inherit;font-size:14px;
-}
 
 .board{max-width:1280px;margin:0 auto;padding:0 20px 56px}
 
@@ -161,25 +153,20 @@ footer{
 
 <header>
   <h1>DANKWIST&nbsp;<span class="pct">/ 100%</span></h1>
-  <p class="tagline">Все игры, пройденные на 100% достижений, — по сложности платины. Нажми на обложку, чтобы открыть прохождение.</p>
+  <p class="tagline">Все игры, пройденные на 100% достижений, — по сложности платины. Клик по обложке открывает видео с прохождением сразу на нужном таймкоде.</p>
   <div class="stats">
     <div class="stat"><b id="statGames">0</b><span>игр пройдено</span></div>
-    <div class="stat"><b id="statHours">0</b><span>часов до платины</span></div>
+    <div class="stat"><b id="statVideos">0</b><span>выпусков</span></div>
   </div>
 </header>
 
 <div class="controls">
   <input id="q" class="search" type="search" placeholder="Найти игру…" aria-label="Поиск по названию">
-  <select id="sort" class="sort" aria-label="Сортировка внутри категории">
-    <option value="name">По названию</option>
-    <option value="hoursDesc">Сначала долгие</option>
-    <option value="hoursAsc">Сначала быстрые</option>
-  </select>
 </div>
 
 <main class="board" id="board"></main>
 
-<footer>Прототип. Распределение по сложности и часы — демонстрационные данные. Обложки подтягиваются со Steam CDN: превью-хостинг Claude блокирует внешние изображения, поэтому здесь видны запасные плитки; на реальном домене обложки загрузятся автоматически. Клик ведёт на поиск прохождения на YouTube; в финальной версии — прямая ссылка на видео.</footer>
+<footer>Прототип. Распределение по сложности — черновое, расставлено произвольно и легко меняется в одной строке данных. Обложки подтягиваются со Steam CDN (превью Claude блокирует внешние изображения — на реальном хостинге всё загрузится). Каждая плитка ведёт на конкретное видео с таймкодом начала прохождения.</footer>
 
 <script>
 const TIERS=[
@@ -191,59 +178,45 @@ const TIERS=[
  {key:"Невозможно",color:"var(--d6)"}
 ];
 
-/* id — Steam appid для обложки header.jpg; null = игры нет в Steam (PS/Quest-эксклюзив) */
+/* v — id YouTube-видео, t — таймкод в секундах, id — Steam appid для обложки */
 const GAMES=[
- {n:"Granny Remake",d:"Очень легко",h:3,id:2110820},
- {n:"Poppy Playtime",d:"Очень легко",h:4,id:1721470},
- {n:"Among the Sleep",d:"Очень легко",h:4,id:250620},
- {n:"That's Not My Neighbor",d:"Очень легко",h:4,id:3431040},
- {n:"Easy Delivery Co.",d:"Очень легко",h:5,id:3293010},
- {n:"Cars 2",d:"Очень легко",h:10,id:301760},
+ {n:"Alba: A Wildlife Adventure",d:"Очень легко",v:"OV1IeFbSUUs",t:3510,id:1337010},
+ {n:"Spilled!",d:"Очень легко",v:"UxFUTD6dO-Y",t:0,id:2240080},
+ {n:"Leaf it Alone",d:"Очень легко",v:"UxFUTD6dO-Y",t:1196,id:3981100},
+ {n:"LEGO Voyagers",d:"Очень легко",v:"l8rc2HWwGUA",t:1553,id:1538550},
 
- {n:"Sally Face",d:"Легко",h:10,id:557410},
- {n:"OneShot",d:"Легко",h:6,id:420530},
- {n:"Viewfinder",d:"Легко",h:6,id:1382070},
- {n:"What the Car?",d:"Легко",h:8,id:2727650},
- {n:"Loddlenaut",d:"Легко",h:7,id:1644940},
- {n:"Lucius",d:"Легко",h:6,id:218640},
- {n:"Зайчик",d:"Легко",h:9,id:1421250},
- {n:"LEGO Batman",d:"Легко",h:15,id:21000},
- {n:"Hello Neighbor",d:"Легко",h:7,id:521890},
- {n:"Jusant",d:"Легко",h:6,id:1977170},
+ {n:"Loddlenaut",d:"Легко",v:"UxFUTD6dO-Y",t:2975,id:1644940},
+ {n:"Hello Neighbor",d:"Легко",v:"cToipL19mt0",t:1220,id:521890},
+ {n:"Как достать соседа (Neighbours back From Hell)",d:"Легко",v:"TJWN_12r4SM",t:0,id:1283190},
+ {n:"Sonic Adventure DX",d:"Легко",v:"lWqbIcR9CPE",t:1395,id:71250},
+ {n:"Lucius Demake",d:"Легко",v:"xADjuQgr6to",t:2178,id:364230},
+ {n:"LEGO Batman: The Videogame",d:"Легко",v:"qPU10wXx28w",t:519,id:21000},
+ {n:"LEGO Horizon Adventures",d:"Легко",v:"qPU10wXx28w",t:0,id:2428810},
+ {n:"LEGO Star Wars: The Force Awakens",d:"Легко",v:"qPU10wXx28w",t:1214,id:438640},
 
- {n:"Slender: The Arrival",d:"Нормально",h:5,id:252330},
- {n:"VA-11 Hall-A",d:"Нормально",h:12,id:447530},
- {n:"World of Goo",d:"Нормально",h:11,id:22000},
- {n:"Mafia: Definitive Edition",d:"Нормально",h:15,id:1030840},
- {n:"Trover Saves the Universe",d:"Нормально",h:8,id:1051200},
- {n:"Potion Craft",d:"Нормально",h:19,id:1210320},
- {n:"Metro 2033 Redux",d:"Нормально",h:14,id:286690},
- {n:"Metro: Last Light Redux",d:"Нормально",h:13,id:287390},
- {n:"Spec Ops: The Line",d:"Нормально",h:9,id:50300},
- {n:"Quantum Break",d:"Нормально",h:17,id:474960},
- {n:"Lost in Vivo",d:"Нормально",h:6,id:963710},
- {n:"Lucius III",d:"Нормально",h:8,id:513290},
- {n:"Assassin's Creed Mirage",d:"Нормально",h:24,id:2384540},
- {n:"Turok",d:"Нормально",h:9,id:405820},
- {n:"DOOM 64",d:"Нормально",h:7,id:1148590},
- {n:"Naruto: Ultimate Ninja Storm",d:"Нормально",h:16,id:495140},
+ {n:"Police Stories",d:"Нормально",v:"cToipL19mt0",t:2561,id:539470},
+ {n:"007 First Light",d:"Нормально",v:"TJWN_12r4SM",t:1086,id:3768760},
+ {n:"We Were Here Forever",d:"Нормально",v:"TJWN_12r4SM",t:2664,id:1341290},
+ {n:"TMNT: Splintered Fate",d:"Нормально",v:"lWqbIcR9CPE",t:0,id:2996040},
+ {n:"MOUSE: P.I. For Hire",d:"Нормально",v:"lWqbIcR9CPE",t:3769,id:2416450},
+ {n:"Greyhill Incident",d:"Нормально",v:"hbc1HJB3KmA",t:0,id:1905020},
+ {n:"Quantum Break",d:"Нормально",v:"hbc1HJB3KmA",t:531,id:474960},
+ {n:"Front Mission Evolved",d:"Нормально",v:"hbc1HJB3KmA",t:1679,id:43000},
+ {n:"Lucius",d:"Нормально",v:"xADjuQgr6to",t:159,id:218640},
+ {n:"Lucius II",d:"Нормально",v:"xADjuQgr6to",t:1034,id:296830},
+ {n:"Lucius III",d:"Нормально",v:"xADjuQgr6to",t:2623,id:513290},
+ {n:"Little Nightmares III",d:"Нормально",v:"l8rc2HWwGUA",t:496,id:1392860},
+ {n:"Metro 2033 Redux",d:"Нормально",v:"ntuJ0vS1eGg",t:320,id:286690},
+ {n:"Metro: Last Light Redux",d:"Нормально",v:"ntuJ0vS1eGg",t:1491,id:287390},
 
- {n:"God of War (2005)",d:"Сложно",h:11,id:null},
- {n:"God of War: Ascension",d:"Сложно",h:13,id:null},
- {n:"God of War (2018)",d:"Сложно",h:32,id:1593500},
- {n:"Marvel's Spider-Man 2",d:"Сложно",h:28,id:2651280},
- {n:"Assassin's Creed Shadows",d:"Сложно",h:55,id:3159330},
- {n:"Metro Exodus",d:"Сложно",h:27,id:412020},
- {n:"The Last of Us Part I",d:"Сложно",h:30,id:1888930},
- {n:"Atomic Heart",d:"Сложно",h:25,id:668580},
- {n:"Prototype 2",d:"Сложно",h:20,id:115320},
- {n:"Dying Light: The Beast",d:"Сложно",h:22,id:3008130},
- {n:"Batman: Arkham Shadow",d:"Сложно",h:14,id:null},
+ {n:"I Am Fish",d:"Сложно",v:"cToipL19mt0",t:0,id:1472560},
+ {n:"Tunic",d:"Сложно",v:"l8rc2HWwGUA",t:0,id:553420},
+ {n:"Metro Exodus",d:"Сложно",v:"ntuJ0vS1eGg",t:3062,id:412020},
+ {n:"Metro Awakening VR",d:"Сложно",v:"ntuJ0vS1eGg",t:4941,id:2669410},
 
- {n:"Ghostrunner",d:"Очень сложно",h:18,id:1139900},
- {n:"DOOM Eternal",d:"Очень сложно",h:34,id:782330},
+ {n:"Sekiro: Shadows Die Twice",d:"Очень сложно",v:"OV1IeFbSUUs",t:867,id:814380},
 
- {n:"Skull Island: Rise of Kong",d:"Невозможно",h:5,id:null}
+ {n:"Skull Island: Rise of Kong",d:"Невозможно",v:"OV1IeFbSUUs",t:0,id:2097890}
 ];
 
 function hue(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h%360}
@@ -255,29 +228,31 @@ function coverUrl(g){
   return g.id?`https://cdn.cloudflare.steamstatic.com/steam/apps/${g.id}/header.jpg`:null;
 }
 function ytLink(g){
-  return "https://www.youtube.com/results?search_query="+encodeURIComponent("dankwist "+g.n+" 100%");
+  return `https://www.youtube.com/watch?v=${g.v}`+(g.t?`&t=${g.t}s`:"");
+}
+function fmtTime(t){
+  const h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;
+  const mm=h?String(m).padStart(2,"0"):m, ss=String(s).padStart(2,"0");
+  return h?`${h}:${mm}:${ss}`:`${m}:${ss}`;
 }
 
 const board=document.getElementById("board");
-let query="",sort="name";
+let query="";
 
 function tileHtml(g){
   const url=coverUrl(g);
   const img=url?`<img src="${url}" alt="" loading="lazy" onerror="this.remove()">`:"";
-  return `<a class="tile" href="${ytLink(g)}" target="_blank" rel="noopener" aria-label="${g.n}">
+  return `<a class="tile" href="${ytLink(g)}" target="_blank" rel="noopener" aria-label="${g.n} — смотреть прохождение">
     <div class="fallback" style="background:${fallbackBg(g)}"><div class="name">${g.n}</div></div>
     ${img}
-    <div class="hover"><span class="t">${g.n}</span><span class="w">Смотреть прохождение</span><span class="h">${g.h} ч до 100%</span></div>
+    <div class="hover"><span class="t">${g.n}</span><span class="w">▶ Смотреть прохождение</span><span class="h">с ${fmtTime(g.t)}</span></div>
   </a>`;
 }
 
 function render(){
   let html="";
   for(const t of TIERS){
-    let list=GAMES.filter(g=>g.d===t.key&&g.n.toLowerCase().includes(query));
-    if(sort==="name")list.sort((a,b)=>a.n.localeCompare(b.n,"ru"));
-    if(sort==="hoursDesc")list.sort((a,b)=>b.h-a.h);
-    if(sort==="hoursAsc")list.sort((a,b)=>a.h-b.h);
+    const list=GAMES.filter(g=>g.d===t.key&&g.n.toLowerCase().includes(query));
     if(!list.length&&query)continue;
     html+=`<div class="tier-rule" style="--tc:${t.color}">
       <span class="label">${t.key}</span><span class="count">${list.length} ${plural(list.length)}</span>
@@ -297,9 +272,8 @@ function plural(n){
 }
 
 document.getElementById("statGames").textContent=GAMES.length;
-document.getElementById("statHours").textContent=GAMES.reduce((s,g)=>s+g.h,0);
+document.getElementById("statVideos").textContent=new Set(GAMES.map(g=>g.v)).size;
 document.getElementById("q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();render()});
-document.getElementById("sort").addEventListener("change",e=>{sort=e.target.value;render()});
 render();
 </script>
 </body>
