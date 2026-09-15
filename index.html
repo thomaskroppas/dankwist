@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dankwist — все игры, пройденные на 100%</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#101720;
+  --bg-raise:#1a2431;
+  --edge:#2c3d52;
+  --ink:#e8eef5;
+  --ink-dim:#8fa1b5;
+  --gold:#f0c145;
+  --gold-deep:#c2911c;
+  --d1:#6fd08c; /* очень легко */
+  --d2:#b7d96a; /* легко */
+  --d3:#e8dfae; /* нормально */
+  --d4:#f0a35e; /* сложно */
+  --d5:#e06666; /* очень сложно */
+  --d6:#b03a5b; /* невозможно */
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Onest',system-ui,sans-serif;
+  min-height:100vh;
+}
+
+header{
+  padding:44px 20px 22px;
+  max-width:1280px;margin:0 auto;
+}
+h1{
+  font-family:'Unbounded',sans-serif;
+  font-weight:900;
+  font-size:clamp(28px,5vw,48px);
+  line-height:1;
+}
+h1 .pct{color:var(--gold)}
+.tagline{
+  color:var(--ink-dim);
+  font-size:15px;
+  max-width:64ch;
+  margin-top:10px;
+}
+.stats{display:flex;gap:32px;margin-top:20px;flex-wrap:wrap}
+.stat b{font-family:'Unbounded',sans-serif;font-weight:700;font-size:24px;display:block}
+.stat span{color:var(--ink-dim);font-size:13px}
+
+.controls{
+  max-width:1280px;margin:0 auto;padding:12px 20px 14px;
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+  position:sticky;top:0;z-index:6;
+  background:linear-gradient(var(--bg) 80%, transparent);
+}
+.search{
+  flex:1 1 240px;
+  background:var(--bg-raise);
+  border:1px solid var(--edge);
+  border-radius:10px;
+  padding:11px 15px;
+  color:var(--ink);
+  font:inherit;font-size:15px;
+  outline:none;
+}
+.search:focus{border-color:var(--gold-deep)}
+.search::placeholder{color:var(--ink-dim)}
+.sort{
+  background:var(--bg-raise);
+  border:1px solid var(--edge);
+  border-radius:10px;
+  padding:10px 13px;
+  color:var(--ink);
+  font:inherit;font-size:14px;
+}
+
+.board{max-width:1280px;margin:0 auto;padding:0 20px 56px}
+
+/* --- разделитель-черта с названием категории --- */
+.tier-rule{
+  display:flex;align-items:center;gap:14px;
+  margin:26px 0 8px;
+}
+.tier-rule:first-child{margin-top:6px}
+.tier-rule .label{
+  font-family:'Unbounded',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  color:var(--tc);
+  white-space:nowrap;
+}
+.tier-rule .count{
+  color:var(--ink-dim);font-size:13px;white-space:nowrap;
+}
+.tier-rule::before,.tier-rule::after{
+  content:"";height:2px;background:var(--tc);opacity:.55;
+}
+.tier-rule::before{width:34px;flex:none}
+.tier-rule::after{flex:1}
+
+/* --- плотная сетка плиток --- */
+.tiles{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(154px,1fr));
+  gap:3px;
+}
+.tile{
+  position:relative;
+  display:block;
+  aspect-ratio:460/215;
+  overflow:hidden;
+  text-decoration:none;
+  background:var(--bg-raise);
+}
+.tile:focus-visible{outline:3px solid var(--gold);outline-offset:1px;z-index:2}
+.tile img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;
+}
+.fallback{
+  position:absolute;inset:0;
+  display:flex;align-items:flex-end;
+  padding:8px;
+}
+.fallback .name{
+  font-family:'Unbounded',sans-serif;
+  font-weight:700;font-size:11px;line-height:1.25;
+  color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6);
+}
+.hover{
+  position:absolute;inset:0;z-index:3;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  background:rgba(12,17,24,.82);
+  opacity:0;transition:opacity .13s ease;
+  text-align:center;padding:6px;
+}
+.tile:hover .hover,.tile:focus-visible .hover{opacity:1}
+@media (prefers-reduced-motion: reduce){.hover{transition:none}}
+.hover .t{
+  font-family:'Unbounded',sans-serif;font-weight:700;font-size:11px;color:#fff;line-height:1.25;
+}
+.hover .w{color:var(--gold);font-size:11px;font-weight:600}
+.hover .h{color:var(--ink-dim);font-size:10px}
+
+.empty{
+  color:var(--ink-dim);font-size:14px;padding:10px 0 2px;
+}
+footer{
+  max-width:1280px;margin:0 auto;
+  padding:0 20px 44px;
+  color:var(--ink-dim);font-size:13px;line-height:1.5;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DANKWIST&nbsp;<span class="pct">/ 100%</span></h1>
+  <p class="tagline">Все игры, пройденные на 100% достижений, — по сложности платины. Нажми на обложку, чтобы открыть прохождение.</p>
+  <div class="stats">
+    <div class="stat"><b id="statGames">0</b><span>игр пройдено</span></div>
+    <div class="stat"><b id="statHours">0</b><span>часов до платины</span></div>
+  </div>
+</header>
+
+<div class="controls">
+  <input id="q" class="search" type="search" placeholder="Найти игру…" aria-label="Поиск по названию">
+  <select id="sort" class="sort" aria-label="Сортировка внутри категории">
+    <option value="name">По названию</option>
+    <option value="hoursDesc">Сначала долгие</option>
+    <option value="hoursAsc">Сначала быстрые</option>
+  </select>
+</div>
+
+<main class="board" id="board"></main>
+
+<footer>Прототип. Распределение по сложности и часы — демонстрационные данные. Обложки подтягиваются со Steam CDN: превью-хостинг Claude блокирует внешние изображения, поэтому здесь видны запасные плитки; на реальном домене обложки загрузятся автоматически. Клик ведёт на поиск прохождения на YouTube; в финальной версии — прямая ссылка на видео.</footer>
+
+<script>
+const TIERS=[
+ {key:"Очень легко",color:"var(--d1)"},
+ {key:"Легко",color:"var(--d2)"},
+ {key:"Нормально",color:"var(--d3)"},
+ {key:"Сложно",color:"var(--d4)"},
+ {key:"Очень сложно",color:"var(--d5)"},
+ {key:"Невозможно",color:"var(--d6)"}
+];
+
+/* id — Steam appid для обложки header.jpg; null = игры нет в Steam (PS/Quest-эксклюзив) */
+const GAMES=[
+ {n:"Granny Remake",d:"Очень легко",h:3,id:2110820},
+ {n:"Poppy Playtime",d:"Очень легко",h:4,id:1721470},
+ {n:"Among the Sleep",d:"Очень легко",h:4,id:250620},
+ {n:"That's Not My Neighbor",d:"Очень легко",h:4,id:3431040},
+ {n:"Easy Delivery Co.",d:"Очень легко",h:5,id:3293010},
+ {n:"Cars 2",d:"Очень легко",h:10,id:301760},
+
+ {n:"Sally Face",d:"Легко",h:10,id:557410},
+ {n:"OneShot",d:"Легко",h:6,id:420530},
+ {n:"Viewfinder",d:"Легко",h:6,id:1382070},
+ {n:"What the Car?",d:"Легко",h:8,id:2727650},
+ {n:"Loddlenaut",d:"Легко",h:7,id:1644940},
+ {n:"Lucius",d:"Легко",h:6,id:218640},
+ {n:"Зайчик",d:"Легко",h:9,id:1421250},
+ {n:"LEGO Batman",d:"Легко",h:15,id:21000},
+ {n:"Hello Neighbor",d:"Легко",h:7,id:521890},
+ {n:"Jusant",d:"Легко",h:6,id:1977170},
+
+ {n:"Slender: The Arrival",d:"Нормально",h:5,id:252330},
+ {n:"VA-11 Hall-A",d:"Нормально",h:12,id:447530},
+ {n:"World of Goo",d:"Нормально",h:11,id:22000},
+ {n:"Mafia: Definitive Edition",d:"Нормально",h:15,id:1030840},
+ {n:"Trover Saves the Universe",d:"Нормально",h:8,id:1051200},
+ {n:"Potion Craft",d:"Нормально",h:19,id:1210320},
+ {n:"Metro 2033 Redux",d:"Нормально",h:14,id:286690},
+ {n:"Metro: Last Light Redux",d:"Нормально",h:13,id:287390},
+ {n:"Spec Ops: The Line",d:"Нормально",h:9,id:50300},
+ {n:"Quantum Break",d:"Нормально",h:17,id:474960},
+ {n:"Lost in Vivo",d:"Нормально",h:6,id:963710},
+ {n:"Lucius III",d:"Нормально",h:8,id:513290},
+ {n:"Assassin's Creed Mirage",d:"Нормально",h:24,id:2384540},
+ {n:"Turok",d:"Нормально",h:9,id:405820},
+ {n:"DOOM 64",d:"Нормально",h:7,id:1148590},
+ {n:"Naruto: Ultimate Ninja Storm",d:"Нормально",h:16,id:495140},
+
+ {n:"God of War (2005)",d:"Сложно",h:11,id:null},
+ {n:"God of War: Ascension",d:"Сложно",h:13,id:null},
+ {n:"God of War (2018)",d:"Сложно",h:32,id:1593500},
+ {n:"Marvel's Spider-Man 2",d:"Сложно",h:28,id:2651280},
+ {n:"Assassin's Creed Shadows",d:"Сложно",h:55,id:3159330},
+ {n:"Metro Exodus",d:"Сложно",h:27,id:412020},
+ {n:"The Last of Us Part I",d:"Сложно",h:30,id:1888930},
+ {n:"Atomic Heart",d:"Сложно",h:25,id:668580},
+ {n:"Prototype 2",d:"Сложно",h:20,id:115320},
+ {n:"Dying Light: The Beast",d:"Сложно",h:22,id:3008130},
+ {n:"Batman: Arkham Shadow",d:"Сложно",h:14,id:null},
+
+ {n:"Ghostrunner",d:"Очень сложно",h:18,id:1139900},
+ {n:"DOOM Eternal",d:"Очень сложно",h:34,id:782330},
+
+ {n:"Skull Island: Rise of Kong",d:"Невозможно",h:5,id:null}
+];
+
+function hue(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h%360}
+function fallbackBg(g){
+  const h=hue(g.n);
+  return `linear-gradient(135deg,hsl(${h} 42% 30%),hsl(${(h+40)%360} 55% 18%))`;
+}
+function coverUrl(g){
+  return g.id?`https://cdn.cloudflare.steamstatic.com/steam/apps/${g.id}/header.jpg`:null;
+}
+function ytLink(g){
+  return "https://www.youtube.com/results?search_query="+encodeURIComponent("dankwist "+g.n+" 100%");
+}
+
+const board=document.getElementById("board");
+let query="",sort="name";
+
+function tileHtml(g){
+  const url=coverUrl(g);
+  const img=url?`<img src="${url}" alt="" loading="lazy" onerror="this.remove()">`:"";
+  return `<a class="tile" href="${ytLink(g)}" target="_blank" rel="noopener" aria-label="${g.n}">
+    <div class="fallback" style="background:${fallbackBg(g)}"><div class="name">${g.n}</div></div>
+    ${img}
+    <div class="hover"><span class="t">${g.n}</span><span class="w">Смотреть прохождение</span><span class="h">${g.h} ч до 100%</span></div>
+  </a>`;
+}
+
+function render(){
+  let html="";
+  for(const t of TIERS){
+    let list=GAMES.filter(g=>g.d===t.key&&g.n.toLowerCase().includes(query));
+    if(sort==="name")list.sort((a,b)=>a.n.localeCompare(b.n,"ru"));
+    if(sort==="hoursDesc")list.sort((a,b)=>b.h-a.h);
+    if(sort==="hoursAsc")list.sort((a,b)=>a.h-b.h);
+    if(!list.length&&query)continue;
+    html+=`<div class="tier-rule" style="--tc:${t.color}">
+      <span class="label">${t.key}</span><span class="count">${list.length} ${plural(list.length)}</span>
+    </div>`;
+    html+=list.length
+      ?`<div class="tiles">${list.map(tileHtml).join("")}</div>`
+      :`<div class="empty">Пока пусто</div>`;
+  }
+  board.innerHTML=html||`<div class="empty">Ничего не нашлось.</div>`;
+}
+
+function plural(n){
+  const m10=n%10,m100=n%100;
+  if(m10===1&&m100!==11)return"игра";
+  if(m10>=2&&m10<=4&&(m100<10||m100>=20))return"игры";
+  return"игр";
+}
+
+document.getElementById("statGames").textContent=GAMES.length;
+document.getElementById("statHours").textContent=GAMES.reduce((s,g)=>s+g.h,0);
+document.getElementById("q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();render()});
+document.getElementById("sort").addEventListener("change",e=>{sort=e.target.value;render()});
+render();
+</script>
+</body>
+</html>
